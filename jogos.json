@@ -1,0 +1,38 @@
+[
+  {
+    "nome": "1234",
+    "desc": "12345678910",
+    "url": "http://localhost:3000/arquivos/1774117030870-live or die-1_0_0-windows.zip",
+    "data": "2026-03-21T18:17:11.343Z"
+  },
+  {
+    "nome": "live or die",
+    "desc": "",
+    "url": "http://localhost:3000/arquivos/1774117409388-live or die-1_0_0-windows.zip",
+    "data": "2026-03-21T18:23:29.887Z"
+  },
+  {
+    "id": "1774118749682",
+    "nome": "live or die",
+    "desc": "live or die e um jogo assimetrico ",
+    "plataforma": "pc",
+    "versao": "1.0.0",
+    "url": "http://localhost:3000/arquivos/1774118749041-live or die-1_0_0-windows.zip",
+    "comentarios": [],
+    "logs": [
+      "[21/03/2026] Lançamento inicial"
+    ]
+  },
+  {
+    "id": "1774118829535",
+    "nome": "live or die(android)",
+    "desc": "live or die e um jogo assimetrico",
+    "plataforma": "mobile",
+    "versao": "1.0.0",
+    "url": "http://localhost:3000/arquivos/1774118829379-live or die-1_0_1.apk",
+    "comentarios": [],
+    "logs": [
+      "[21/03/2026] Lançamento inicial"
+    ]
+  }
+]
