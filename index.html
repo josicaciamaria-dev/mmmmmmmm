@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Portfolio | Game Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white font-sans min-h-screen">
+
+    <header class="p-6 border-b border-gray-800 flex justify-between items-center bg-gray-900/50 backdrop-blur-md sticky top-0 z-50">
+        <h1 class="text-2xl font-bold tracking-tighter text-blue-500">DEV_PORTFOLIO</h1>
+        <nav>
+            <a href="index.html" class="text-blue-400 px-4 text-sm font-medium border-b-2 border-blue-500 pb-1">Início</a>
+            <a href="admin.html" class="hover:text-blue-400 px-4 text-sm font-medium transition">Painel Admin</a>
+        </nav>
+    </header>
+
+    <main class="max-w-6xl mx-auto p-8">
+        
+        <div id="status-storage" class="hidden mb-8 p-4 bg-blue-900/30 border border-blue-500/30 rounded-2xl flex items-center gap-3">
+            <span class="relative flex h-3 w-3">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+            </span>
+            <p class="text-xs text-blue-300">Home Storage Online via LocalTunnel</p>
+        </div>
+
+        <section class="mb-16">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="p-2 bg-blue-600/20 rounded-lg">
+                    <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
+                <h2 class="text-3xl font-bold">Lançamentos <span class="text-sm font-normal text-gray-500 ml-2">Explorar Jogos</span></h2>
+            </div>
+
+            <div id="grid-jogos" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                </div>
+        </section>
+
+    </main>
+
+    <script>
+    // 🔗 LINK DO SEU SERVIDOR NO RENDER
+  // Altere em AMBOS os arquivos (.html)
+const API_URL = "https://mmmmmmmm-344r.onrender.com";
+
+    async function carregarVitrine() {
+        const container = document.getElementById('grid-jogos');
+        container.innerHTML = '<p class="text-gray-500 col-span-full text-center animate-pulse">Buscando jogos no servidor...</p>';
+
+        try {
+            const res = await fetch(`${API_URL}/api/jogos`);
+            const jogos = await res.json();
+
+            if (jogos.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 col-span-full text-center">Nenhum jogo publicado ainda.</p>';
+                return;
+            }
+
+            container.innerHTML = ''; 
+
+            jogos.forEach(jogo => {
+                const curtidas = jogo.likes || 0;
+                const baixados = jogo.downloads || 0;
+                
+                // ⚠️ IMPORTANTE: Se o link for do seu PC, ele usa a URL salva no Firebase
+              const linkDownload = jogo.url_jogo;
+
+                const card = document.createElement('div');
+                card.className = "bg-gray-800/50 rounded-2xl p-5 border border-gray-800 hover:border-blue-500 transition-all flex flex-col group";
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="bg-blue-600/20 text-blue-400 text-[10px] px-2 py-1 rounded font-bold uppercase border border-blue-500/20">${jogo.plataforma}</span>
+                        <div class="flex items-center gap-1 text-gray-500 text-xs">
+                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                             <span>${baixados}</span>
+                        </div>
+                    </div>
+
+                    <h3 class="text-white font-bold text-xl mb-2 group-hover:text-blue-400 transition-colors">${jogo.nome}</h3>
+                    <p class="text-gray-400 text-sm mb-6 flex-grow">${jogo.desc || 'Sem descrição.'}</p>
+                    
+                    <div class="flex items-center justify-between mb-4 px-1">
+                        <button onclick="darLike('${jogo.id}')" class="flex items-center gap-2 text-gray-400 hover:text-red-500 transition-colors group/like">
+                            <svg id="heart-${jogo.id}" class="w-5 h-5 transition-all group-active/like:scale-125" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            </svg>
+                            <span id="like-count-${jogo.id}" class="text-sm font-medium">${curtidas}</span>
+                        </button>
+                    </div>
+
+                    <a href="${linkDownload}" 
+                       target="_blank"
+                       onclick="registrarDownload('${jogo.id}')"
+                       class="block w-full bg-blue-600 hover:bg-blue-500 text-white text-center font-bold py-3 rounded-xl transition shadow-lg shadow-blue-900/20 uppercase text-sm tracking-widest">
+                        Baixar Agora
+                    </a>
+                `;
+                container.appendChild(card);
+            });
+
+        } catch (err) {
+            container.innerHTML = '<p class="text-red-500 col-span-full text-center">Erro de conexão com o servidor.</p>';
+        }
+    }
+
+    async function darLike(jogoId) {
+        try {
+            const res = await fetch(`${API_URL}/api/jogos/${jogoId}/like`, { method: 'POST' });
+            if (res.ok) {
+                const span = document.getElementById(`like-count-${jogoId}`);
+                const heart = document.getElementById(`heart-${jogoId}`);
+                span.innerText = parseInt(span.innerText) + 1;
+                heart.setAttribute('fill', 'currentColor');
+                heart.classList.add('text-red-500');
+            }
+        } catch (e) { console.error("Erro like"); }
+    }
+
+    function registrarDownload(jogoId) {
+        fetch(`${API_URL}/api/jogos/${jogoId}/download`, { method: 'POST' })
+        .catch(e => console.error("Erro download"));
+    }
+
+    async function registrarAcesso() {
+        try { await fetch(`${API_URL}/api/visita`, { method: 'POST' }); } catch (e) { }
+    }
+
+    window.onload = () => {
+        carregarVitrine();
+        registrarAcesso();
+        
+        // Verifica se o storage está rodando (opcional)
+        if(window.location.href.includes('loca.lt')) {
+            document.getElementById('status-storage').classList.remove('hidden');
+        }
+    };
+</script>
+
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #374151; border-radius: 10px; }
+    </style>
+</body>
+</html>
